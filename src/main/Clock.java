@@ -1,8 +1,6 @@
 import java.awt.Font;
-import java.awt.image.ImageObserver;
 import java.awt.RenderingHints;
-import java.util.Date;
-import java.awt.Stroke;
+import java.util.Calendar;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -33,10 +31,10 @@ class Clock extends JPanel implements Runnable
      * 
      */
     public Clock() {
-        this.image = new ImageIcon("clock5.png");
+        this.image = new ImageIcon("clock2.png");
         this.offDimension = new Dimension(this.image.getIconWidth(), this.image.getIconHeight());
         this.title = "";
-        this.timeZone = 0;
+        this.timeZone = 6;
         this.pointerSize = 100;
         this.debug = false;
         this.grid = false;
@@ -46,6 +44,13 @@ class Clock extends JPanel implements Runnable
             (this.clockThread = new Thread(this, "Clock")).start();
         }
         this.setSize(this.offDimension);
+    }
+    
+    /**
+     * 
+     */
+    public Dimension getClockSize() {
+        return this.offDimension;
     }
     
     /**
@@ -96,7 +101,6 @@ class Clock extends JPanel implements Runnable
         final Graphics2D g2d = (Graphics2D)g;
         final int width = 1;
         final Color bg_color = g2d.getBackground();
-        final int color_rgb = bg_color.getRGB();
         final int R = 255 - bg_color.getRed();
         final int G = 255 - bg_color.getGreen();
         final int B = 255 - bg_color.getBlue();
@@ -116,7 +120,6 @@ class Clock extends JPanel implements Runnable
      * @param timeZone
      */
     private void renderClock(final Graphics g, final int timeZone) {
-        final Date currentDate = new Date();
         final Dimension d = new Dimension(this.image.getIconWidth(), this.image.getIconHeight());
         final int fontSize = (int)Math.round(d.getWidth() * 0.08);
         final int centerX = (int)d.getWidth() / 2;
@@ -127,10 +130,10 @@ class Clock extends JPanel implements Runnable
         final int pointer_hour = (int)Math.round(this.pointerSize * 0.65);
         final int width_sec = 1;
         final int width_min = Math.round((float)(this.pointerSize / 15));
-        final int width_hour = Math.round((float)(this.pointerSize / 10));
-        final int second = currentDate.getSeconds();
-        final int minute = currentDate.getMinutes();
-        int hour = currentDate.getHours() + timeZone;
+        final int width_hour = Math.round((float) (this.pointerSize / 10));
+        final int second = Calendar.getInstance().get(Calendar.SECOND);
+        final int minute = Calendar.getInstance().get(Calendar.MINUTE);
+        int hour = Calendar.getInstance().get(Calendar.HOUR)+timeZone;
         if (hour < 0) {
             hour += 23;
         }
@@ -177,14 +180,14 @@ class Clock extends JPanel implements Runnable
         }
         final int len = this.title.length();
         final int offset = len / 2 * Math.round((float)(fontSize / 2));
-        g2d.drawString(this.title, (float)(centerX - offset), (float)(centerY + Math.round(d.getHeight() * 0.48)));
+        g2d.drawString(this.title, (float)(centerX - offset), (float)(centerY + Math.round(d.getHeight() * 0.49)));
         if (this.debug) {
             g2d.setFont(new Font("Lucida", 0, 12));
             g2d.setColor(Color.white);
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            g2d.drawString("sec =" + currentDate.getSeconds() + "  x=" + sec_x + "  y=" + sec_y + "  degree=" + degree_sec + " Math.sin(" + degree_sec + ")=" + Math.toDegrees(Math.sin(degree_sec)), 10, 40);
-            g2d.drawString("min =" + currentDate.getMinutes() + "  x=" + min_x + "  y=" + min_y + "  degree=" + degree_min + " Math.sin(" + degree_min + ")=" + Math.toDegrees(Math.sin(degree_min)), 10, 55);
-            g2d.drawString("hour=" + currentDate.getHours() + "  x=" + hour_x + "  y=" + hour_y + "  degree=" + degree_hour + " Math.sin(" + degree_hour + ")=" + Math.toDegrees(Math.sin(degree_hour)), 10, 70);
+            g2d.drawString("sec =" + Calendar.getInstance().get(Calendar.SECOND) + "  x=" + sec_x + "  y=" + sec_y + "  degree=" + degree_sec + " Math.sin(" + degree_sec + ")=" + Math.toDegrees(Math.sin(degree_sec)), 10, 40);
+            g2d.drawString("min =" + Calendar.getInstance().get(Calendar.MINUTE) + "  x=" + min_x + "  y=" + min_y + "  degree=" + degree_min + " Math.sin(" + degree_min + ")=" + Math.toDegrees(Math.sin(degree_min)), 10, 55);
+            g2d.drawString("hour=" + Calendar.getInstance().get(Calendar.HOUR) + "  x=" + hour_x + "  y=" + hour_y + "  degree=" + degree_hour + " Math.sin(" + degree_hour + ")=" + Math.toDegrees(Math.sin(degree_hour)), 10, 70);
             g2d.drawString("image.getIconWidth()=" + this.image.getIconWidth(), 10, 85);
             g2d.drawString("image.getIconHeight()=" + this.image.getIconHeight(), 10, 100);
             g2d.drawString("centerX=" + centerX, 10, 115);
@@ -199,7 +202,7 @@ class Clock extends JPanel implements Runnable
      * 
      */
     public void update(final Graphics g) {
-        final Dimension d = this.size();
+        final Dimension d = this.getSize();
         if (this.offGraphics == null || d.width != this.offDimension.width || d.height != this.offDimension.height) {
             this.offDimension = d;
             this.offImage = this.createImage(d.width, d.height);
