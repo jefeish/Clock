@@ -9,6 +9,7 @@ import java.awt.Image;
 import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import java.util.TimeZone;
 
 /**
  * 
@@ -131,15 +132,19 @@ class Clock extends JPanel implements Runnable
         final int width_sec = 1;
         final int width_min = Math.round((float)(this.pointerSize / 15));
         final int width_hour = Math.round((float) (this.pointerSize / 10));
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         final int second = Calendar.getInstance().get(Calendar.SECOND);
         final int minute = Calendar.getInstance().get(Calendar.MINUTE);
-        int hour = Calendar.getInstance().get(Calendar.HOUR)+timeZone;
-        if (hour < 0) {
-            hour += 23;
+        int hour = Calendar.getInstance().get(Calendar.HOUR) + timeZone;
+        final int pm = Calendar.getInstance().get(Calendar.AM_PM);
+
+        if (pm == 1) {
+            hour += 12;
         }
-        else if (hour > 23) {
-            hour -= 23;
+        else {
+            hour -= 12;
         }
+        
         final int degree_sec = second * 6 - 90;
         final int degree_min = minute * 6 - 180;
         final int degree_hour = hour * 30 + minute * 6 / 12 - 180;
