@@ -15,3 +15,14 @@ Flicker free image rendering.
 ## Sample
 
 ![sample](./sample.gif)
+
+## Quickstart
+
+```bash
+cd src/main
+
+javac Cock.java
+javac Demo.java
+
+java Demo
+```
